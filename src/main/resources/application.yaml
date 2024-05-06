@@ -1,0 +1,27 @@
+spring:
+  application:
+    name: ms-pagamento
+  cloud:
+    openfeign:
+      client:
+        config:
+          mercadopago:
+            default-request-headers:
+              Authorization:
+                - Bearer TEST-6416668675808261-012515-7dac31f086dd3bdf5d7137ace77d0ad1-1654958216
+server:
+  port: 8081
+rest:
+  service:
+    mercadopago:
+      url: https://api.mercadopago.com
+      user-id: 1654958216
+      pos-id: FIAP001POS001
+      notification-url: "https://b321-187-19-179-63.ngrok-free.app/api/v1/pedidos/confirmar-pagamento"
+    ms-pedido:
+      url: http://localhost:8080
+      context: api/v1
+      auth:
+        login: 19100000000
+        senha: 12345678
+        
