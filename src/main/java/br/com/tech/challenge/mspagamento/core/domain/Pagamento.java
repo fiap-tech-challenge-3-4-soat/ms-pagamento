@@ -5,7 +5,7 @@ public class Pagamento {
     private String idPedido;
     private String idPagamentoExterno;
     private String total;
-    private String status;
+    private StatusPagamento status;
     private String qrCode;
 
     public Pagamento(PagamentoBuilder pagamentoBuilder) {
@@ -37,7 +37,7 @@ public class Pagamento {
         return total;
     }
 
-    public String getStatus() {
+    public StatusPagamento getStatus() {
         return status;
     }
 
@@ -50,7 +50,7 @@ public class Pagamento {
         private String idPedido;
         private String idPagamentoExterno;
         private String total;
-        private String status;
+        private StatusPagamento status;
         private String qrCode;
 
         public PagamentoBuilder id(String id) {
@@ -74,7 +74,7 @@ public class Pagamento {
             return this;
         }
 
-        public PagamentoBuilder status(String status) {
+        public PagamentoBuilder status(StatusPagamento status) {
             this.status = status;
             return this;
         }

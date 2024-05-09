@@ -1,6 +1,7 @@
 package br.com.tech.challenge.mspagamento.infrastructure.service;
 
 import br.com.tech.challenge.mspagamento.application.service.PagamentoService;
+import br.com.tech.challenge.mspagamento.core.domain.StatusPagamento;
 import br.com.tech.challenge.mspagamento.infrastructure.exception.IntegrationException;
 import br.com.tech.challenge.mspagamento.infrastructure.exception.InternalErrorException;
 import br.com.tech.challenge.mspagamento.infrastructure.integration.rest.mercadopago.GerarCodigoQrRequest;
@@ -9,6 +10,8 @@ import br.com.tech.challenge.mspagamento.infrastructure.integration.rest.mercado
 import br.com.tech.challenge.mspagamento.infrastructure.integration.rest.mspedido.MSPedidoHttpClient;
 import br.com.tech.challenge.mspagamento.infrastructure.integration.rest.mspedido.to.ItemPedidoTO;
 import br.com.tech.challenge.mspagamento.infrastructure.integration.rest.qrcodeapi.QrCodeHttpClient;
+import br.com.tech.challenge.mspagamento.infrastructure.persistence.model.PagamentoModel;
+import br.com.tech.challenge.mspagamento.infrastructure.persistence.repository.PagamentoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -31,6 +34,7 @@ public class PagamentoMercadoLivreService implements PagamentoService {
     private final MercadoPagoHttpClient mercadopagoHttpClient;
     private final QrCodeHttpClient qrCodeHttpClient;
     private final MSPedidoHttpClient msPedidoHttpClient;
+    private final PagamentoRepository pagamentoRepository;
     private final Long HORAS_ADICIONAIS = 2L;
     private final String DEFAULT_PATH = "qr-codes/qrcode-pedido-";
 
@@ -60,6 +64,16 @@ public class PagamentoMercadoLivreService implements PagamentoService {
             String fileName = DEFAULT_PATH + idPedido + ".png";
             var file = new File(fileName);
             ImageIO.write(bufferedImage, "png", file);
+
+            var pagamento = PagamentoModel.builder()
+                    .idPedido(idPedido)
+                    .idPagamentoExterno(qrCodeData.inStoreOrderid())
+                    .total(request.getTotalAmount())
+                    .status(StatusPagamento.ABERTO)
+                    .qrCode(qrCodeData.qrData())
+                    .build();
+
+            pagamento = pagamentoRepository.save(pagamento);
 
             return file;
         } catch (IOException e) {

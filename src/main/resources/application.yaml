@@ -9,6 +9,11 @@ spring:
             default-request-headers:
               Authorization:
                 - Bearer TEST-6416668675808261-012515-7dac31f086dd3bdf5d7137ace77d0ad1-1654958216
+  data:
+    mongodb:
+      authentication-database: admin
+      uri: mongodb://admin:admin@localhost:27017/pagamentos?authSource=admin
+      database: pagamentos
 server:
   port: 8081
 rest:
@@ -17,7 +22,7 @@ rest:
       url: https://api.mercadopago.com
       user-id: 1654958216
       pos-id: FIAP001POS001
-      notification-url: "https://b321-187-19-179-63.ngrok-free.app/api/v1/pedidos/confirmar-pagamento"
+      notification-url: "https://5978-187-19-179-207.ngrok-free.app/v1/pedidos/confirmar-pagamento"
     ms-pedido:
       url: http://localhost:8080
       context: api/v1
