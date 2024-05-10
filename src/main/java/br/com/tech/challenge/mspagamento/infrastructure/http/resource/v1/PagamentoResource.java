@@ -45,4 +45,5 @@ public class PagamentoResource {
         }
 
         return ResponseEntity.ok().build();
+    }
 }

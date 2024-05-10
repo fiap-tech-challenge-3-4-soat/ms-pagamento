@@ -1,6 +1,7 @@
 package br.com.tech.challenge.mspagamento.infrastructure.service;
 
 import br.com.tech.challenge.mspagamento.application.service.PedidoService;
+import br.com.tech.challenge.mspagamento.core.exception.PagamentoJaRealizadoException;
 import br.com.tech.challenge.mspagamento.infrastructure.exception.IntegrationException;
 import br.com.tech.challenge.mspagamento.infrastructure.integration.rest.mspedido.MSPedidoHttpClient;
 import feign.RetryableException;
@@ -25,9 +26,17 @@ public class PedidoServiceImpl implements PedidoService {
             }
 
             if (statusPedido.pagamentoAprovado()) {
-                //TODO alterar para exception especifica
-                throw new IntegrationException("Não foi possível obter os dados para validar o pedido");
+                throw new PagamentoJaRealizadoException(idPedido);
             }
+        } catch (RetryableException exception) {
+            throw new IntegrationException("Não foi possível obter os dados para validar o pedido");
+        }
+    }
+
+    @Override
+    public void definirPedidoComoPago(Long idPedido) {
+        try {
+            msPedidoHttpClient.confirmarPagamento(idPedido);
         } catch (RetryableException exception) {
             throw new IntegrationException("Não foi possível obter os dados para validar o pedido");
         }

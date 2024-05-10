@@ -1,10 +1,12 @@
 package br.com.tech.challenge.mspagamento.core.domain;
 
+import java.math.BigDecimal;
+
 public class Pagamento {
     private String id;
-    private String idPedido;
+    private Long idPedido;
     private String idPagamentoExterno;
-    private String total;
+    private BigDecimal total;
     private StatusPagamento status;
     private String qrCode;
 
@@ -25,7 +27,7 @@ public class Pagamento {
         return id;
     }
 
-    public String getIdPedido() {
+    public Long getIdPedido() {
         return idPedido;
     }
 
@@ -33,7 +35,7 @@ public class Pagamento {
         return idPagamentoExterno;
     }
 
-    public String getTotal() {
+    public BigDecimal getTotal() {
         return total;
     }
 
@@ -45,11 +47,31 @@ public class Pagamento {
         return qrCode;
     }
 
+    public void adicionarIdExterno(String idExterno) {
+        this.idPagamentoExterno = idExterno;
+    }
+
+    public void adicionarTotal(BigDecimal valor) {
+        this.total = this.total.add(valor);
+    }
+
+    public void definirPago() {
+        this.status = StatusPagamento.PAGO;
+    }
+
+    public void adicionarQrCode(String qrCode) {
+        this.qrCode = qrCode;
+    }
+
+    public boolean estaPago() {
+        return this.status == StatusPagamento.PAGO;
+    }
+
     public static class PagamentoBuilder {
         private String id;
-        private String idPedido;
+        private Long idPedido;
         private String idPagamentoExterno;
-        private String total;
+        private BigDecimal total;
         private StatusPagamento status;
         private String qrCode;
 
@@ -58,7 +80,7 @@ public class Pagamento {
             return this;
         }
 
-        public PagamentoBuilder idPedido(String idPedido) {
+        public PagamentoBuilder idPedido(Long idPedido) {
             this.idPedido = idPedido;
             return this;
         }
@@ -69,7 +91,7 @@ public class Pagamento {
             return this;
         }
 
-        public PagamentoBuilder total(String total) {
+        public PagamentoBuilder total(BigDecimal total) {
             this.total = total;
             return this;
         }

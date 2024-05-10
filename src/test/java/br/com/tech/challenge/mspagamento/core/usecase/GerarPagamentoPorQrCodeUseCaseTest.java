@@ -9,7 +9,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.File;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -27,11 +26,11 @@ class GerarPagamentoPorQrCodeUseCaseTest {
 
     @Test
     void deveriaGerarPagamentoComSucesso() {
-        when(pagamentoGateway.criarPagamentoPorQrCode(anyLong()))
+        when(pagamentoGateway.gerarQrCode(anyLong()))
                 .thenReturn(file);
 
         underTest.executar(1L);
 
-        verify(pagamentoGateway).criarPagamentoPorQrCode(anyLong());
+        verify(pagamentoGateway).gerarQrCode(anyLong());
     }
 }
