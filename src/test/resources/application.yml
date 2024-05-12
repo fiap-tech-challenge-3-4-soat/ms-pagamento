@@ -1,0 +1,22 @@
+spring:
+  data:
+    mongodb:
+      authentication-database: admin
+      uri: mongodb://admin:admin@localhost:27017/pagamentos_test?authSource=admin
+      database: pagamentos_test
+rest:
+  service:
+    mercadopago:
+      url: https://api.mercadopago.com
+      user-id: test
+      pos-id: test
+      notification-url: "test"
+    ms-pedido:
+      url: http://localhost:8080
+      context: api/v1
+      auth:
+        login: test
+        senha: test
+
+assets:
+  image: "src/test/resources/"

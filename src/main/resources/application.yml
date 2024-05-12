@@ -29,4 +29,6 @@ rest:
       auth:
         login: 19100000000
         senha: 12345678
-        
+
+assets:
+  image: "qr-codes/qrcode-pedido-"

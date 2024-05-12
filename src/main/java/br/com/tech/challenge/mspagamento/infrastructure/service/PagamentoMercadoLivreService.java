@@ -38,7 +38,9 @@ public class PagamentoMercadoLivreService implements PagamentoService {
     private final PagamentoModelMapper mapper;
 
     private final Long HORAS_ADICIONAIS = 2L;
-    private final String DEFAULT_PATH = "qr-codes/qrcode-pedido-";
+
+    @Value("${assets.image}")
+    private String defaultPath;
 
     @Value("${rest.service.mercadopago.notification-url}")
     private String notificacaoUrl;
@@ -63,7 +65,7 @@ public class PagamentoMercadoLivreService implements PagamentoService {
 
             ByteArrayInputStream bis = new ByteArrayInputStream(qrCodeImage);
             BufferedImage bufferedImage = ImageIO.read(bis);
-            String fileName = DEFAULT_PATH + pagamento.getIdPedido() + ".png";
+            String fileName = defaultPath + pagamento.getIdPedido() + ".png";
             var file = new File(fileName);
             ImageIO.write(bufferedImage, "png", file);
 

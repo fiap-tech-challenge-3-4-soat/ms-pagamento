@@ -25,7 +25,7 @@ public class PedidoServiceImpl implements PedidoService {
                 throw new IntegrationException("Não foi possível obter os dados para validar o pedido");
             }
 
-            if (statusPedido.pagamentoAprovado()) {
+            if (Boolean.TRUE.equals(statusPedido.pagamentoAprovado())) {
                 throw new PagamentoJaRealizadoException(idPedido);
             }
         } catch (RetryableException exception) {
