@@ -20,16 +20,6 @@ jobs:
     needs: testes-unitarios
     runs-on: ubuntu-latest
     services:
-      mssql:
-        image: mysql:8.0.33
-        env:
-          MYSQL_DATABASE: sistema_pedidos_test
-          MYSQL_USER: sistema_pedidos
-          MYSQL_PASSWORD: sistema_pedidos
-          MYSQL_ROOT_PASSWORD: rootsql
-        ports:
-          - 33080:3306
-          
       mongodb:
         image: mongo
         env:
