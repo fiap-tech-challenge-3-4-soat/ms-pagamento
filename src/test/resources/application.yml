@@ -14,9 +14,6 @@ rest:
     ms-pedido:
       url: http://localhost:8080
       context: api/v1
-      auth:
-        login: test
-        senha: test
 
 assets:
   image: "src/test/resources/"

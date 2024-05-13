@@ -20,6 +20,8 @@
 		<jakarta.validation.version>3.0.2</jakarta.validation.version>
 		<jacoco.version>0.8.8</jacoco.version>
 		<mockito-inline.version>5.2.0</mockito-inline.version>
+		<sonar.organization>fiap-tech-challenge-3-4-soat</sonar.organization>
+		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
 	</properties>
 	<dependencies>
 		<dependency>

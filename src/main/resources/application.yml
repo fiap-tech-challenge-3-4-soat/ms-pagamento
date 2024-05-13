@@ -26,9 +26,6 @@ rest:
     ms-pedido:
       url: http://localhost:8080
       context: api/v1
-      auth:
-        login: 19100000000
-        senha: 12345678
 
 assets:
   image: "qr-codes/qrcode-pedido-"
