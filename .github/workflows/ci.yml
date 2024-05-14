@@ -15,7 +15,6 @@ jobs:
           cache: maven
       - name: Executando testes unitários
         run: mvn test
-      cache: maven
   testes-integrados:
     needs: testes-unitarios
     runs-on: ubuntu-latest
