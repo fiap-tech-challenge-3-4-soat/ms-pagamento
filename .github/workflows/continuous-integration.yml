@@ -44,7 +44,7 @@ jobs:
           cache: maven
       - name: Executando testes integrados
         env:
-          MONGO_URL: mongodb://admin:admin@localhost:27017/pagamentos?authSource=admin
+          MONGO_URL: mongodb://admin:admin@localhost:27017/pagamentos_test?authSource=admin
         run: mvn test -P integration-test
         
   qualidade-de-codigo:
