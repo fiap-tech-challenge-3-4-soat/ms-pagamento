@@ -30,6 +30,8 @@ jobs:
         uses: supercharge/mongodb-github-action@1.10.0
         with:
           mongodb-version: '7.0'
+          mongodb-username: admin
+          mongodb-pwd: admin
       - name: Executando testes integrados
         run: mvn test -P integration-test
         
