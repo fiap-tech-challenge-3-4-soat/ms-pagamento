@@ -31,7 +31,8 @@ jobs:
         with:
           mongodb-version: '7.0'
           mongodb-username: admin
-          mongodb-pwd: admin
+          mongodb-password: admin
+          mongodb-db: pagamentos_test
       - name: Executando testes integrados
         run: mvn test -P integration-test
         
