@@ -19,9 +19,6 @@ jobs:
   testes-integrados:
     needs: testes-unitarios
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        mongodb-version: [ '5.0', '6.0', '7.0' ]
     steps:
       - uses: actions/checkout@v4
       - name: Set up JDK 17
@@ -32,7 +29,7 @@ jobs:
       - name: Iniciar MongoDB
         uses: supercharge/mongodb-github-action@1.10.0
         with:
-          mongodb-version: ${{ matrix.mongodb-version }}
+          mongodb-version: '7.0'
       - name: Executando testes integrados
         run: mvn test -P integration-test
         
