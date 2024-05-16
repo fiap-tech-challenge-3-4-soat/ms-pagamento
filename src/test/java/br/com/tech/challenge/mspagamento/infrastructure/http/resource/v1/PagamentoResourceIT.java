@@ -10,9 +10,11 @@ import br.com.tech.challenge.mspagamento.infrastructure.integration.rest.mspedid
 import br.com.tech.challenge.mspagamento.infrastructure.integration.rest.mspedido.to.PedidoTO;
 import br.com.tech.challenge.mspagamento.infrastructure.integration.rest.qrcodeapi.QrCodeHttpClient;
 import br.com.tech.challenge.mspagamento.infrastructure.persistence.repository.mongodb.PagamentoRepositoryMongoDB;
+import feign.FeignException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +47,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 class PagamentoResourceIT {
     private final String PAGAMENTO_PATH = "/v1/pagamentos";
+
+    @Mock
+    private FeignException feignException;
 
     @Autowired
     private MockMvc mockMvc;
@@ -243,6 +248,65 @@ class PagamentoResourceIT {
 
         verify(pedidoService, never()).definirPedidoComoPago(idPedido);
         verify(mercadopagoHttpClient, never()).consultarMerchantOrder(anyLong());
+    }
+
+    @Test
+    void deveriaFalharAoLancarIoException() throws Exception {
+        var gerarQrCodeResponse = obterGerarCodigoQrResponse();
+        var obterPedidoResponse = obterPedidoResponse();
+        var arrayByte = new byte[1];
+        var messageError = "Error IOException";
+
+        doNothing().when(pedidoService).validarPedido(idPedido);
+        when(msPedidoHttpClient.obterPedido(idPedido))
+                .thenReturn(ResponseEntity.of(Optional.of(obterPedidoResponse)));
+        when(mercadopagoHttpClient.gerarQrData(any(GerarCodigoQrRequest.class)))
+                .thenReturn(ResponseEntity.of(Optional.of(gerarQrCodeResponse)));
+        when(qrCodeHttpClient.gerarQrCode(anyString(), anyString()))
+                .thenReturn(ResponseEntity.of(Optional.of(arrayByte)));
+
+        try (MockedStatic<ImageIO> imageIO = Mockito.mockStatic(ImageIO.class)) {
+            imageIO.when(() -> ImageIO.read(any(ByteArrayInputStream.class)))
+                    .thenThrow(new IOException(messageError));
+
+            mockMvc.perform(post(PAGAMENTO_PATH + "/{idPedido}", idPedido)
+                            .contentType(MediaType.APPLICATION_JSON)
+                    )
+                    .andExpect(status().isInternalServerError())
+                    .andExpect(jsonPath("$.mensagem").value(messageError));
+
+        }
+
+        verify(msPedidoHttpClient).obterPedido(idPedido);
+        verify(mercadopagoHttpClient).gerarQrData(any(GerarCodigoQrRequest.class));
+        verify(qrCodeHttpClient).gerarQrCode(anyString(), anyString());
+    }
+
+    @Test
+    void deveriaFalharQuandoFeignExceptionForLancadaNaCriacaoDosDadosDoQrCode() throws Exception {
+        var obterPedidoResponse = obterPedidoResponse();
+        var arrayByte = new byte[1];
+        var messageError = "Request Error";
+
+        doNothing().when(pedidoService).validarPedido(idPedido);
+        when(msPedidoHttpClient.obterPedido(idPedido))
+                .thenReturn(ResponseEntity.of(Optional.of(obterPedidoResponse)));
+        when(mercadopagoHttpClient.gerarQrData(any(GerarCodigoQrRequest.class)))
+                .thenThrow(feignException);
+        when(qrCodeHttpClient.gerarQrCode(anyString(), anyString()))
+                .thenReturn(ResponseEntity.of(Optional.of(arrayByte)));
+        when(feignException.getMessage())
+                .thenReturn(messageError);
+
+        mockMvc.perform(post(PAGAMENTO_PATH + "/{idPedido}", idPedido)
+                        .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andExpect(status().isInternalServerError())
+                .andExpect(jsonPath("$.mensagem").value(messageError));
+
+        verify(msPedidoHttpClient).obterPedido(idPedido);
+        verify(mercadopagoHttpClient).gerarQrData(any(GerarCodigoQrRequest.class));
+        verify(qrCodeHttpClient, never()).gerarQrCode(anyString(), anyString());
     }
 
     private GerarCodigoQrResponse obterGerarCodigoQrResponse() {

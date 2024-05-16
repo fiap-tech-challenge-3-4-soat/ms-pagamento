@@ -12,6 +12,7 @@ import br.com.tech.challenge.mspagamento.infrastructure.integration.rest.mspedid
 import br.com.tech.challenge.mspagamento.infrastructure.integration.rest.qrcodeapi.QrCodeHttpClient;
 import br.com.tech.challenge.mspagamento.infrastructure.mapper.PagamentoModelMapper;
 import br.com.tech.challenge.mspagamento.infrastructure.persistence.repository.mongodb.PagamentoRepositoryMongoDB;
+import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -47,8 +48,8 @@ public class PagamentoMercadoLivreService implements PagamentoService {
 
     @Override
     public File gerarQrCode(Pagamento pagamento) {
-        var request = obterMercadoPagoRequest(pagamento.getIdPedido());
         try {
+            var request = obterMercadoPagoRequest(pagamento.getIdPedido());
             var gerarQrDataResponse = mercadopagoHttpClient.gerarQrData(request);
             var qrCodeData = gerarQrDataResponse.getBody();
 
@@ -78,19 +79,25 @@ public class PagamentoMercadoLivreService implements PagamentoService {
             return file;
         } catch (IOException e) {
             throw new InternalErrorException(e.getMessage());
+        } catch (FeignException exception) {
+            throw new IntegrationException(exception.getMessage());
         }
     }
 
     @Override
     public Long confirmarPagamento(Long idExterno) {
-        var response = mercadopagoHttpClient.consultarMerchantOrder(idExterno);
-        var consultaPagamentoResponse = response.getBody();
+        try {
+            var response = mercadopagoHttpClient.consultarMerchantOrder(idExterno);
+            var consultaPagamentoResponse = response.getBody();
 
-        if (Objects.nonNull(consultaPagamentoResponse) && consultaPagamentoResponse.isPaid()) {
-            return consultaPagamentoResponse.externalReference();
+            if (Objects.nonNull(consultaPagamentoResponse) && consultaPagamentoResponse.isPaid()) {
+                return consultaPagamentoResponse.externalReference();
+            }
+
+            return null;
+        } catch (FeignException exception) {
+            throw new IntegrationException(exception.getMessage());
         }
-
-        return null;
     }
 
     private GerarCodigoQrRequest obterMercadoPagoRequest(Long idPedido) {
