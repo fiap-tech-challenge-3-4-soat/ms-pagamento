@@ -7,6 +7,8 @@ import br.com.tech.challenge.mspagamento.core.gateway.PagamentoGateway;
 import br.com.tech.challenge.mspagamento.infrastructure.integration.rest.mercadopago.*;
 import br.com.tech.challenge.mspagamento.infrastructure.integration.rest.mspedido.MSPedidoHttpClient;
 import br.com.tech.challenge.mspagamento.infrastructure.integration.rest.mspedido.ObterPedidoResponse;
+import br.com.tech.challenge.mspagamento.infrastructure.integration.rest.mspedido.ObterStatusPedidoResponse;
+import br.com.tech.challenge.mspagamento.infrastructure.integration.rest.mspedido.to.ItemPedidoTO;
 import br.com.tech.challenge.mspagamento.infrastructure.integration.rest.mspedido.to.PedidoTO;
 import br.com.tech.challenge.mspagamento.infrastructure.integration.rest.qrcodeapi.QrCodeHttpClient;
 import br.com.tech.challenge.mspagamento.infrastructure.persistence.repository.mongodb.PagamentoRepositoryMongoDB;
@@ -33,6 +35,7 @@ import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -95,9 +98,11 @@ class PagamentoResourceIT {
     void deveriaGerarQrCodeDePagamentoComSucesso() throws Exception {
         var gerarQrCodeResponse = obterGerarCodigoQrResponse();
         var obterPedidoResponse = obterPedidoResponse();
+        var obterStatusPedidoResponse = obterStatusPedidoResponse();
         var arrayByte = new byte[1];
 
-        doNothing().when(pedidoService).validarPedido(idPedido);
+        when(msPedidoHttpClient.obterStatusPedido(idPedido))
+                .thenReturn(ResponseEntity.of(Optional.of(obterStatusPedidoResponse)));
         when(msPedidoHttpClient.obterPedido(idPedido))
                 .thenReturn(ResponseEntity.of(Optional.of(obterPedidoResponse)));
         when(mercadopagoHttpClient.gerarQrData(any(GerarCodigoQrRequest.class)))
@@ -152,8 +157,10 @@ class PagamentoResourceIT {
     void deveriaFalharQuandoARespostaParaGerarAImagemDoQrCodeForInvalido() throws Exception {
         var gerarQrCodeResponse = obterGerarCodigoQrResponse();
         var obterPedidoResponse = obterPedidoResponse();
+        var obterStatusPedidoResponse = obterStatusPedidoResponse();
 
-        doNothing().when(pedidoService).validarPedido(idPedido);
+        when(msPedidoHttpClient.obterStatusPedido(idPedido))
+                .thenReturn(ResponseEntity.of(Optional.of(obterStatusPedidoResponse)));
         when(msPedidoHttpClient.obterPedido(idPedido))
                 .thenReturn(ResponseEntity.of(Optional.of(obterPedidoResponse)));
         when(mercadopagoHttpClient.gerarQrData(any(GerarCodigoQrRequest.class)))
@@ -254,10 +261,12 @@ class PagamentoResourceIT {
     void deveriaFalharAoLancarIoException() throws Exception {
         var gerarQrCodeResponse = obterGerarCodigoQrResponse();
         var obterPedidoResponse = obterPedidoResponse();
+        var obterStatusPedidoResponse = obterStatusPedidoResponse();
         var arrayByte = new byte[1];
         var messageError = "Error IOException";
 
-        doNothing().when(pedidoService).validarPedido(idPedido);
+        when(msPedidoHttpClient.obterStatusPedido(idPedido))
+                .thenReturn(ResponseEntity.of(Optional.of(obterStatusPedidoResponse)));
         when(msPedidoHttpClient.obterPedido(idPedido))
                 .thenReturn(ResponseEntity.of(Optional.of(obterPedidoResponse)));
         when(mercadopagoHttpClient.gerarQrData(any(GerarCodigoQrRequest.class)))
@@ -285,10 +294,12 @@ class PagamentoResourceIT {
     @Test
     void deveriaFalharQuandoFeignExceptionForLancadaNaCriacaoDosDadosDoQrCode() throws Exception {
         var obterPedidoResponse = obterPedidoResponse();
+        var obterStatusPedidoResponse = obterStatusPedidoResponse();
         var arrayByte = new byte[1];
         var messageError = "Request Error";
 
-        doNothing().when(pedidoService).validarPedido(idPedido);
+        when(msPedidoHttpClient.obterStatusPedido(idPedido))
+                .thenReturn(ResponseEntity.of(Optional.of(obterStatusPedidoResponse)));
         when(msPedidoHttpClient.obterPedido(idPedido))
                 .thenReturn(ResponseEntity.of(Optional.of(obterPedidoResponse)));
         when(mercadopagoHttpClient.gerarQrData(any(GerarCodigoQrRequest.class)))
@@ -313,8 +324,13 @@ class PagamentoResourceIT {
         return new GerarCodigoQrResponse("idExternal", "qrData");
     }
 
+    private ObterStatusPedidoResponse obterStatusPedidoResponse() {
+        return new ObterStatusPedidoResponse(Boolean.TRUE);
+    }
+
     private ObterPedidoResponse obterPedidoResponse() {
-        return new ObterPedidoResponse(new PedidoTO(1L, BigDecimal.TEN, Boolean.TRUE, new ArrayList<>()));
+        var itemPedido = new ItemPedidoTO("Nome teste", "Descrição Teste", BigDecimal.TEN, 2, "Observacao Teste");
+        return new ObterPedidoResponse(new PedidoTO(1L, BigDecimal.TEN, Boolean.TRUE, new ArrayList<>(List.of(itemPedido))));
     }
 
     private BufferedImage obterBufferedImage() throws IOException {

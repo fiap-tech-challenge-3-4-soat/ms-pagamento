@@ -16,8 +16,10 @@
 	<properties>
 		<java.version>17</java.version>
 		<spring-cloud.version>2023.0.1</spring-cloud.version>
+		<lombok.version>1.18.24</lombok.version>
 		<jakarta.inject.version>2.0.1</jakarta.inject.version>
 		<jakarta.validation.version>3.0.2</jakarta.validation.version>
+		<jakarta.persistence.version>3.1.0</jakarta.persistence.version>
 		<jacoco.version>0.8.8</jacoco.version>
 		<mockito-inline.version>5.2.0</mockito-inline.version>
 		<sonar.sources>src/main/java</sonar.sources>
@@ -49,7 +51,7 @@
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
-			<version>1.18.24</version>
+			<version>${lombok.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>jakarta.inject</groupId>
@@ -64,7 +66,7 @@
 		<dependency>
 			<groupId>jakarta.persistence</groupId>
 			<artifactId>jakarta.persistence-api</artifactId>
-			<version>3.1.0</version>
+			<version>${jakarta.persistence.version}</version>
 		</dependency>
 	</dependencies>
 	<dependencyManagement>
@@ -191,6 +193,7 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
 				<configuration>
+					<skipTests>${skipUnitTests}</skipTests>
 					<argLine>${surefireArgLine}</argLine>
 				</configuration>
 			</plugin>
@@ -199,6 +202,7 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-failsafe-plugin</artifactId>
 				<configuration>
+					<skipTests>${skipIntegrationTests}</skipTests>
 					<argLine>${failsafeArgLine}</argLine>
 				</configuration>
 			</plugin>
