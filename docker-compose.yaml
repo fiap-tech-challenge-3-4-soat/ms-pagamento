@@ -1,0 +1,31 @@
+version: "3.9"
+
+services:
+  ms-pagamentos-db:
+    platform: linux/arm64/v8
+    image: mongo
+    container_name: ms-pagamentos-db
+    restart: unless-stopped
+    tty: true
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=admin
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/pagamentos --quiet
+      interval: 5s
+      timeout: 10s
+      retries: 5
+    ports:
+      - "27017:27017"
+    volumes:
+      - dbdata:/data/db
+    networks:
+      - ms-pagamentos-network
+
+networks:
+  ms-pagamentos-network:
+    driver: bridge
+
+volumes:
+  dbdata:
+    driver: local

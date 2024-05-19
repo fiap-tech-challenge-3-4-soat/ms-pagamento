@@ -1,9 +1,12 @@
 package br.com.tech.challenge.mspagamento.application.v1.controller;
 
 import br.com.tech.challenge.mspagamento.application.controller.PagamentoController;
+import br.com.tech.challenge.mspagamento.application.service.PagamentoService;
+import br.com.tech.challenge.mspagamento.application.service.PedidoService;
+import br.com.tech.challenge.mspagamento.core.domain.Pagamento;
+import br.com.tech.challenge.mspagamento.core.event.PagamentoRealizadoEvent;
+import br.com.tech.challenge.mspagamento.core.event.publisher.PagamentoRealizadoEventPublisher;
 import br.com.tech.challenge.mspagamento.core.gateway.PagamentoGateway;
-import br.com.tech.challenge.mspagamento.core.usecase.GerarPagamentoPorQrCodeUseCase;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -11,13 +14,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.File;
+import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class PagamentoControllerTest {
@@ -25,7 +25,19 @@ class PagamentoControllerTest {
     private PagamentoGateway pagamentoGateway;
 
     @Mock
+    private PedidoService pedidoService;
+
+    @Mock
+    private PagamentoService pagamentoService;
+
+    @Mock
+    private PagamentoRealizadoEventPublisher pagamentoRealizadoEventPublisher;
+
+    @Mock
     private File file;
+
+    @Mock
+    private Pagamento pagamento;
 
     @InjectMocks
     private PagamentoController controller;
@@ -33,11 +45,47 @@ class PagamentoControllerTest {
 
     @Test
     void deveriaGerarPagamentoComSucesso() {
-        when(pagamentoGateway.criarPagamentoPorQrCode(anyLong()))
+        doNothing().when(pedidoService).validarPedido(anyLong());
+        when(pagamentoGateway.gerarQrCode(any(Pagamento.class)))
                 .thenReturn(file);
 
         controller.gerarPagamento(1L);
 
-        verify(pagamentoGateway).criarPagamentoPorQrCode(anyLong());
+        verify(pedidoService).validarPedido(anyLong());
+        verify(pagamentoGateway).gerarQrCode(any(Pagamento.class));
+    }
+
+    @Test
+    void deveriaRealizarPagamentoComSucesso() {
+        doNothing().when(pagamento).definirPago();
+        when(pagamentoGateway.obterPagamentoPorIdPedido(anyLong()))
+                .thenReturn(Optional.of(pagamento));
+        when(pagamento.estaPago())
+                .thenReturn(Boolean.FALSE);
+
+        controller.pagar(1L);
+
+        verify(pagamentoGateway).obterPagamentoPorIdPedido(anyLong());
+        verify(pagamentoGateway).salvar(any(Pagamento.class));
+        verify(pagamento).definirPago();
+        verify(pagamento).estaPago();
+        verify(pagamentoRealizadoEventPublisher).publicar(any(PagamentoRealizadoEvent.class));
+    }
+
+    @Test
+    void deveriaReceberConfirmacaoPagamentoComSucesso() {
+        var idPedido = 10L;
+        doNothing().when(pagamento).definirPago();
+        when(pagamentoService.confirmarPagamento(anyLong()))
+                .thenReturn(idPedido);
+        when(pagamentoGateway.obterPagamentoPorIdPedido(anyLong()))
+                .thenReturn(Optional.of(pagamento));
+
+        controller.receberConfirmacaoPagamento(1L);
+
+        verify(pagamentoService).confirmarPagamento(anyLong());
+        verify(pagamentoGateway).obterPagamentoPorIdPedido(anyLong());
+        verify(pagamento).definirPago();
+        verify(pagamentoRealizadoEventPublisher).publicar(any(PagamentoRealizadoEvent.class));
     }
 }

@@ -4,6 +4,7 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
 
 @FeignClient(name = "ms-pedido", url = "${rest.service.ms-pedido.url}/${rest.service.ms-pedido.context}")
 public interface MSPedidoHttpClient {
@@ -12,4 +13,7 @@ public interface MSPedidoHttpClient {
 
     @GetMapping("/pedidos/{idPedido}/status")
     ResponseEntity<ObterStatusPedidoResponse> obterStatusPedido(@PathVariable Long idPedido);
+
+    @PutMapping("/pedidos/{idPedido}/confirmar-pagamento")
+    ResponseEntity<Void> confirmarPagamento(@PathVariable Long idPedido);
 }
