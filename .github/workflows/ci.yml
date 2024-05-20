@@ -113,11 +113,11 @@ jobs:
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
-        
+
       - name: Build and push
         uses: docker/build-push-action@v5
         with:
           context: .
           file: ./Dockerfile
           push: true
-          tags: thomasrabelo/fiap-ms-pagamento:latest
+          tags: thomarabelo/fiap-ms-pagamento:latest
