@@ -105,14 +105,11 @@
 								<architecture>amd64</architecture>
 								<os>linux</os>
 							</platform>
-							<platform>
-								<architecture>arm64</architecture>
-								<os>linux</os>
-							</platform>
+
 						</platforms>
 					</from>
 					<to>
-						<image>docker.io/thomarabelo/fiap-tech_challenge</image>
+						<image>docker.io/thomarabelo/fiap-ms-pagamento</image>
 						<tags>
 							<tag>${project.version}</tag>
 							<tag>latest</tag>
