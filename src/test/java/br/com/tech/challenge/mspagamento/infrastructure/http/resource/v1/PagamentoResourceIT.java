@@ -1,15 +1,14 @@
 package br.com.tech.challenge.mspagamento.infrastructure.http.resource.v1;
 
-import br.com.tech.challenge.mspagamento.application.service.PedidoService;
+import br.com.tech.challenge.mspagamento.TestObjects;
 import br.com.tech.challenge.mspagamento.core.domain.Pagamento;
 import br.com.tech.challenge.mspagamento.core.domain.StatusPagamento;
 import br.com.tech.challenge.mspagamento.core.gateway.PagamentoGateway;
-import br.com.tech.challenge.mspagamento.infrastructure.integration.rest.mercadopago.*;
+import br.com.tech.challenge.mspagamento.infrastructure.integration.rest.mercadopago.ConsultaMerchantOrderResponse;
+import br.com.tech.challenge.mspagamento.infrastructure.integration.rest.mercadopago.EventoConfirmacaoPagamento;
+import br.com.tech.challenge.mspagamento.infrastructure.integration.rest.mercadopago.GerarCodigoQrRequest;
+import br.com.tech.challenge.mspagamento.infrastructure.integration.rest.mercadopago.MercadoPagoHttpClient;
 import br.com.tech.challenge.mspagamento.infrastructure.integration.rest.mspedido.MSPedidoHttpClient;
-import br.com.tech.challenge.mspagamento.infrastructure.integration.rest.mspedido.ObterPedidoResponse;
-import br.com.tech.challenge.mspagamento.infrastructure.integration.rest.mspedido.ObterStatusPedidoResponse;
-import br.com.tech.challenge.mspagamento.infrastructure.integration.rest.mspedido.to.ItemPedidoTO;
-import br.com.tech.challenge.mspagamento.infrastructure.integration.rest.mspedido.to.PedidoTO;
 import br.com.tech.challenge.mspagamento.infrastructure.integration.rest.qrcodeapi.QrCodeHttpClient;
 import br.com.tech.challenge.mspagamento.infrastructure.persistence.repository.mongodb.PagamentoRepositoryMongoDB;
 import feign.FeignException;
@@ -29,13 +28,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
 
 import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -56,9 +51,6 @@ class PagamentoResourceIT {
 
     @Autowired
     private MockMvc mockMvc;
-
-    @MockBean
-    private PedidoService pedidoService;
 
     @MockBean
     private MercadoPagoHttpClient mercadopagoHttpClient;
@@ -96,9 +88,9 @@ class PagamentoResourceIT {
 
     @Test
     void deveriaGerarQrCodeDePagamentoComSucesso() throws Exception {
-        var gerarQrCodeResponse = obterGerarCodigoQrResponse();
-        var obterPedidoResponse = obterPedidoResponse();
-        var obterStatusPedidoResponse = obterStatusPedidoResponse();
+        var gerarQrCodeResponse = TestObjects.obterGerarCodigoQrResponse();
+        var obterPedidoResponse = TestObjects.obterPedidoResponse();
+        var obterStatusPedidoResponse = TestObjects.obterStatusPedidoResponse();
         var arrayByte = new byte[1];
 
         when(msPedidoHttpClient.obterStatusPedido(idPedido))
@@ -112,7 +104,7 @@ class PagamentoResourceIT {
 
         try (MockedStatic<ImageIO> imageIO = Mockito.mockStatic(ImageIO.class)) {
             imageIO.when(() -> ImageIO.read(any(ByteArrayInputStream.class)))
-                    .thenReturn(obterBufferedImage());
+                    .thenReturn(TestObjects.obterBufferedImage());
 
             mockMvc.perform(post(PAGAMENTO_PATH + "/{idPedido}", idPedido)
                             .contentType(MediaType.APPLICATION_JSON)
@@ -132,8 +124,11 @@ class PagamentoResourceIT {
 
     @Test
     void deveriaFalharQuandoARespostaParaGerarOQrCodeForInvalido() throws Exception {
-        var obterPedidoResponse = obterPedidoResponse();
+        var obterPedidoResponse = TestObjects.obterPedidoResponse();
+        var obterStatusPedidoResponse = TestObjects.obterStatusPedidoResponse();
 
+        when(msPedidoHttpClient.obterStatusPedido(idPedido))
+                .thenReturn(ResponseEntity.of(Optional.of(obterStatusPedidoResponse)));
         when(msPedidoHttpClient.obterPedido(idPedido))
                 .thenReturn(ResponseEntity.of(Optional.of(obterPedidoResponse)));
         when(mercadopagoHttpClient.gerarQrData(any(GerarCodigoQrRequest.class)))
@@ -155,9 +150,9 @@ class PagamentoResourceIT {
     }
     @Test
     void deveriaFalharQuandoARespostaParaGerarAImagemDoQrCodeForInvalido() throws Exception {
-        var gerarQrCodeResponse = obterGerarCodigoQrResponse();
-        var obterPedidoResponse = obterPedidoResponse();
-        var obterStatusPedidoResponse = obterStatusPedidoResponse();
+        var gerarQrCodeResponse = TestObjects.obterGerarCodigoQrResponse();
+        var obterPedidoResponse = TestObjects.obterPedidoResponse();
+        var obterStatusPedidoResponse = TestObjects.obterStatusPedidoResponse();
 
         when(msPedidoHttpClient.obterStatusPedido(idPedido))
                 .thenReturn(ResponseEntity.of(Optional.of(obterStatusPedidoResponse)));
@@ -199,7 +194,7 @@ class PagamentoResourceIT {
         pagamento = pagamentoGateway.obterPagamentoPorIdPedido(idPedido).get();
 
         assertTrue(pagamento.estaPago());
-        verify(pedidoService).definirPedidoComoPago(idPedido);
+        verify(msPedidoHttpClient).confirmarPagamento(idPedido);
     }
 
     @Test
@@ -216,7 +211,7 @@ class PagamentoResourceIT {
         var pagamentoOptional = pagamentoGateway.obterPagamentoPorIdPedido(idPedido);
 
         assertFalse(pagamentoOptional.isPresent());
-        verify(pedidoService, never()).definirPedidoComoPago(idPedido);
+        verify(msPedidoHttpClient, never()).obterStatusPedido(idPedido);
     }
 
     @Test
@@ -240,7 +235,7 @@ class PagamentoResourceIT {
 
         assertTrue(pagamento.estaPago());
 
-        verify(pedidoService).definirPedidoComoPago(idPedido);
+        verify(msPedidoHttpClient).confirmarPagamento(idPedido);
         verify(mercadopagoHttpClient).consultarMerchantOrder(anyLong());
     }
 
@@ -253,15 +248,15 @@ class PagamentoResourceIT {
                 )
                 .andExpect(status().isOk());
 
-        verify(pedidoService, never()).definirPedidoComoPago(idPedido);
+        verify(msPedidoHttpClient, never()).obterStatusPedido(idPedido);
         verify(mercadopagoHttpClient, never()).consultarMerchantOrder(anyLong());
     }
 
     @Test
     void deveriaFalharAoLancarIoException() throws Exception {
-        var gerarQrCodeResponse = obterGerarCodigoQrResponse();
-        var obterPedidoResponse = obterPedidoResponse();
-        var obterStatusPedidoResponse = obterStatusPedidoResponse();
+        var gerarQrCodeResponse = TestObjects.obterGerarCodigoQrResponse();
+        var obterPedidoResponse = TestObjects.obterPedidoResponse();
+        var obterStatusPedidoResponse = TestObjects.obterStatusPedidoResponse();
         var arrayByte = new byte[1];
         var messageError = "Error IOException";
 
@@ -293,8 +288,8 @@ class PagamentoResourceIT {
 
     @Test
     void deveriaFalharQuandoFeignExceptionForLancadaNaCriacaoDosDadosDoQrCode() throws Exception {
-        var obterPedidoResponse = obterPedidoResponse();
-        var obterStatusPedidoResponse = obterStatusPedidoResponse();
+        var obterPedidoResponse = TestObjects.obterPedidoResponse();
+        var obterStatusPedidoResponse = TestObjects.obterStatusPedidoResponse();
         var arrayByte = new byte[1];
         var messageError = "Request Error";
 
@@ -320,32 +315,15 @@ class PagamentoResourceIT {
         verify(qrCodeHttpClient, never()).gerarQrCode(anyString(), anyString());
     }
 
-    private GerarCodigoQrResponse obterGerarCodigoQrResponse() {
-        return new GerarCodigoQrResponse("idExternal", "qrData");
-    }
-
-    private ObterStatusPedidoResponse obterStatusPedidoResponse() {
-        return new ObterStatusPedidoResponse(Boolean.TRUE);
-    }
-
-    private ObterPedidoResponse obterPedidoResponse() {
-        var itemPedido = new ItemPedidoTO("Nome teste", "Descrição Teste", BigDecimal.TEN, 2, "Observacao Teste");
-        return new ObterPedidoResponse(new PedidoTO(1L, BigDecimal.TEN, Boolean.TRUE, new ArrayList<>(List.of(itemPedido))));
-    }
-
-    private BufferedImage obterBufferedImage() throws IOException {
-        return new BufferedImage(100, 100, BufferedImage.TYPE_INT_RGB);
-    }
-
-    private Optional<Pagamento> obterPagamento() {
-        return pagamentoGateway.obterPagamentoPorIdPedido(this.idPedido);
-    }
-
     private Pagamento salvarNovoPagamento() {
         var pagamento = Pagamento.builder()
                 .idPedido(idPedido)
                 .status(StatusPagamento.ABERTO)
                 .build();
         return pagamentoGateway.salvar(pagamento);
+    }
+
+    private Optional<Pagamento> obterPagamento() {
+        return pagamentoGateway.obterPagamentoPorIdPedido(this.idPedido);
     }
 }
