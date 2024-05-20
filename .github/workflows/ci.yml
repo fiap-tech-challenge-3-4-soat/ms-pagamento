@@ -114,7 +114,7 @@ jobs:
       - name: Build and Push Docker Image
         run: |
           docker build -t thomasrabelo/fiap-ms-pagamento:latest .
-          docker push thomasrabelo/fiap-ms-pagamento:latest
+          docker push docker.io/thomasrabelo/fiap-ms-pagamento:latest
         env:
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
