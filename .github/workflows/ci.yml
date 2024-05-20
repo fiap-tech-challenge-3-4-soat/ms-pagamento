@@ -87,6 +87,6 @@ jobs:
       - name: Build Docker image
         run: docker build -t thomasrabelo/fiap-ms-pagamento:latest .
       - name: Tag Docker image
-        run: docker tag thomasrabelo/fiap-ms-pagamento:latest .
+        run: docker tag thomasrabelo/fiap-ms-pagamento:latest thomasrabelo/fiap-ms-pagamento:latest
       - name: Push Docker image
         run: docker push thomasrabelo/fiap-ms-pagamento:latest
