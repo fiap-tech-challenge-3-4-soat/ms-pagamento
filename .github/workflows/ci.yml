@@ -118,12 +118,3 @@ jobs:
         env:
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-
-      - name: Log in to Docker Hub
-        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
-      - name: Build Docker image
-        run: docker build -t thomasrabelo/fiap-ms-pagamento:latest .
-      - name: Tag Docker image
-        run: docker tag thomasrabelo/fiap-ms-pagamento:latest thomasrabelo/fiap-ms-pagamento:latest
-      - name: Push Docker image
-        run: docker push thomasrabelo/fiap-ms-pagamento:latest
