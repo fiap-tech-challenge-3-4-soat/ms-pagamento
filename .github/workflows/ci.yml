@@ -103,6 +103,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: java-build
+          path: target
 
       - name: Log in to Docker Hub
         uses: docker/login-action@v3
