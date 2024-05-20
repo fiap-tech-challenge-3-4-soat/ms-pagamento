@@ -15,7 +15,9 @@ jobs:
           cache: maven
       - name: Executando testes unitários
         run: mvn verify -DskipIntegrationTests
+
   testes-integrados:
+    needs: testes-unitarios
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
