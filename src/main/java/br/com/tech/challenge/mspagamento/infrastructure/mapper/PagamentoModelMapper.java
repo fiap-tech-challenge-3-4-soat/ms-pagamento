@@ -9,7 +9,6 @@ public class PagamentoModelMapper {
     public PagamentoModel toModel(Pagamento pagamento) {
         return PagamentoModel.builder()
                 .id(pagamento.getId())
-                .idPedido(pagamento.getIdPedido())
                 .idPagamentoExterno(pagamento.getIdPagamentoExterno())
                 .total(pagamento.getTotal())
                 .status(pagamento.getStatus())
@@ -20,7 +19,6 @@ public class PagamentoModelMapper {
     public Pagamento toDomain(PagamentoModel pagamento) {
         return Pagamento.builder()
                 .id(pagamento.getId())
-                .idPedido(pagamento.getIdPedido())
                 .idPagamentoExterno(pagamento.getIdPagamentoExterno())
                 .total(pagamento.getTotal())
                 .status(pagamento.getStatus())

@@ -13,6 +13,7 @@ public class PagamentoListener {
 
     @EventListener
     public void pagamentoRealizadoListener(PagamentoRealizadoEvent event) {
-        pedidoService.definirPedidoComoPago(event.pagamento().getIdPedido());
+        //TODO verificar esse evento
+        //pedidoService.definirPedidoComoPago(event.pagamento().getPedido().getId());
     }
 }

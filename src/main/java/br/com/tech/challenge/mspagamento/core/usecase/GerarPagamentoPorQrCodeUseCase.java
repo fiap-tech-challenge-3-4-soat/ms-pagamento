@@ -21,7 +21,6 @@ public class GerarPagamentoPorQrCodeUseCase {
         pedidoService.validarPedido(idPedido);
 
         var pagamento = Pagamento.builder()
-                .idPedido(idPedido)
                 .status(StatusPagamento.ABERTO)
                 .total(BigDecimal.ZERO)
                 .build();

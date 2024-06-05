@@ -4,19 +4,19 @@ import java.math.BigDecimal;
 
 public class Pagamento {
     private String id;
-    private Long idPedido;
     private String idPagamentoExterno;
     private BigDecimal total;
     private StatusPagamento status;
     private String qrCode;
+    private Pedido pedido;
 
     public Pagamento(PagamentoBuilder pagamentoBuilder) {
         this.id = pagamentoBuilder.id;
-        this.idPedido = pagamentoBuilder.idPedido;
         this.idPagamentoExterno = pagamentoBuilder.idPagamentoExterno;
         this.total = pagamentoBuilder.total;
         this.status = pagamentoBuilder.status;
         this.qrCode = pagamentoBuilder.qrCode;
+        this.pedido = pagamentoBuilder.pedido;
     }
 
     public static PagamentoBuilder builder() {
@@ -25,10 +25,6 @@ public class Pagamento {
 
     public String getId() {
         return id;
-    }
-
-    public Long getIdPedido() {
-        return idPedido;
     }
 
     public String getIdPagamentoExterno() {
@@ -45,6 +41,10 @@ public class Pagamento {
 
     public String getQrCode() {
         return qrCode;
+    }
+
+    public Pedido getPedido() {
+        return pedido;
     }
 
     public void adicionarIdExterno(String idExterno) {
@@ -69,22 +69,16 @@ public class Pagamento {
 
     public static class PagamentoBuilder {
         private String id;
-        private Long idPedido;
         private String idPagamentoExterno;
         private BigDecimal total;
         private StatusPagamento status;
         private String qrCode;
+        private Pedido pedido;
 
         public PagamentoBuilder id(String id) {
             this.id = id;
             return this;
         }
-
-        public PagamentoBuilder idPedido(Long idPedido) {
-            this.idPedido = idPedido;
-            return this;
-        }
-
 
         public PagamentoBuilder idPagamentoExterno(String idExterno) {
             this.idPagamentoExterno = idExterno;
@@ -103,6 +97,11 @@ public class Pagamento {
 
         public PagamentoBuilder qrCode(String qrCode) {
             this.qrCode = qrCode;
+            return this;
+        }
+
+        public PagamentoBuilder pedido(Pedido pedido) {
+            this.pedido = pedido;
             return this;
         }
 

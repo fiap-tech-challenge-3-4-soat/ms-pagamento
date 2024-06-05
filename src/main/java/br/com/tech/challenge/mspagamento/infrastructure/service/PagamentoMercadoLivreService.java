@@ -49,7 +49,7 @@ public class PagamentoMercadoLivreService implements PagamentoService {
     @Override
     public File gerarQrCode(Pagamento pagamento) {
         try {
-            var request = obterMercadoPagoRequest(pagamento.getIdPedido());
+            var request = obterMercadoPagoRequest(pagamento.getPedido().getId().longValue());
             var gerarQrDataResponse = mercadopagoHttpClient.gerarQrData(request);
             var qrCodeData = gerarQrDataResponse.getBody();
 
@@ -66,7 +66,7 @@ public class PagamentoMercadoLivreService implements PagamentoService {
 
             ByteArrayInputStream bis = new ByteArrayInputStream(qrCodeImage);
             BufferedImage bufferedImage = ImageIO.read(bis);
-            String fileName = defaultPath + pagamento.getIdPedido() + ".png";
+            String fileName = defaultPath + pagamento.getPedido().getId() + ".png";
             var file = new File(fileName);
             ImageIO.write(bufferedImage, "png", file);
 

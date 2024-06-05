@@ -22,7 +22,7 @@ public class TestObjects {
     }
 
     public static ObterPedidoResponse obterPedidoResponse() {
-        var itemPedido = new ItemPedidoTO("Nome teste", "Descrição Teste", BigDecimal.TEN, 2, "Observacao Teste");
+        var itemPedido = new ItemPedidoTO("Nome teste", "Descrição Teste", "Categoria", BigDecimal.TEN, 2, "Observacao Teste");
         return new ObterPedidoResponse(new PedidoTO(1L, BigDecimal.TEN, Boolean.TRUE, new ArrayList<>(List.of(itemPedido))));
     }
 
