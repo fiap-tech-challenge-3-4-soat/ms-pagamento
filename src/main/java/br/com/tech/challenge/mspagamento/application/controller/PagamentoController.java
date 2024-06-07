@@ -26,12 +26,6 @@ public class PagamentoController {
         this.pagamentoRealizadoEventPublisher = pagamentoRealizadoEventPublisher;
     }
 
-    public File gerarPagamento(Long idPedido) {
-        var gerarPagamentoPorQrCodeUseCase = new GerarPagamentoPorQrCodeUseCase(this.pagamentoGateway, this.pedidoService);
-
-        return gerarPagamentoPorQrCodeUseCase.executar(idPedido);
-    }
-
     public void pagar(Long idPedido) {
         var realizarPagamentoUseCase = new RealizarPagamentoUseCase(this.pagamentoGateway, pagamentoRealizadoEventPublisher);
 

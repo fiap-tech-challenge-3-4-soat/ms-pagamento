@@ -2,10 +2,14 @@ package br.com.tech.challenge.mspagamento.infrastructure.mapper;
 
 import br.com.tech.challenge.mspagamento.core.domain.Pagamento;
 import br.com.tech.challenge.mspagamento.infrastructure.persistence.model.PagamentoModel;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @Component
+@RequiredArgsConstructor
 public class PagamentoModelMapper {
+    private final PedidoModelMapper pedidoMapper;
+
     public PagamentoModel toModel(Pagamento pagamento) {
         return PagamentoModel.builder()
                 .id(pagamento.getId())
@@ -13,6 +17,7 @@ public class PagamentoModelMapper {
                 .total(pagamento.getTotal())
                 .status(pagamento.getStatus())
                 .qrCode(pagamento.getQrCode())
+                .pedido(pedidoMapper.toModel(pagamento.getPedido()))
                 .build();
     }
 
@@ -23,6 +28,7 @@ public class PagamentoModelMapper {
                 .total(pagamento.getTotal())
                 .status(pagamento.getStatus())
                 .qrCode(pagamento.getQrCode())
+                .pedido(pedidoMapper.toDomain(pagamento.getPedido()))
                 .build();
     }
 }

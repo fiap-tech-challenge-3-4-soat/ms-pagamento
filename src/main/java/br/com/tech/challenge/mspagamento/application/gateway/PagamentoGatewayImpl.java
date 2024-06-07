@@ -7,7 +7,6 @@ import br.com.tech.challenge.mspagamento.core.gateway.PagamentoGateway;
 import jakarta.inject.Named;
 import lombok.RequiredArgsConstructor;
 
-import java.io.File;
 import java.util.Optional;
 
 @Named
@@ -17,7 +16,7 @@ public class PagamentoGatewayImpl implements PagamentoGateway {
     private final PagamentoRepository pagamentoRepository;
 
     @Override
-    public File gerarQrCode(Pagamento pagamento) {
+    public Pagamento gerarQrCode(Pagamento pagamento) {
         return pagamentoService.gerarQrCode(pagamento);
     }
 

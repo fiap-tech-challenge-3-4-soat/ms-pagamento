@@ -4,6 +4,7 @@ import br.com.tech.challenge.mspagamento.infrastructure.integration.rest.mercado
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
 import lombok.Getter;
 
 import java.math.BigDecimal;

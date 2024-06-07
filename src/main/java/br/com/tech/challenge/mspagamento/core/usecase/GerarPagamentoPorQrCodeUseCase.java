@@ -17,7 +17,7 @@ public class GerarPagamentoPorQrCodeUseCase {
         this.pedidoService = pedidoService;
     }
 
-    public File executar(Long idPedido) {
+    public void executar(Long idPedido) {
         pedidoService.validarPedido(idPedido);
 
         var pagamento = Pagamento.builder()
@@ -25,6 +25,6 @@ public class GerarPagamentoPorQrCodeUseCase {
                 .total(BigDecimal.ZERO)
                 .build();
 
-        return pagamentoGateway.gerarQrCode(pagamento);
+        pagamentoGateway.gerarQrCode(pagamento);
     }
 }
