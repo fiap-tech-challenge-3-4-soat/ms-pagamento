@@ -6,7 +6,7 @@ import br.com.tech.challenge.mspagamento.application.service.PedidoService;
 import br.com.tech.challenge.mspagamento.core.event.publisher.PagamentoRealizadoEventPublisher;
 import br.com.tech.challenge.mspagamento.core.gateway.PagamentoGateway;
 import br.com.tech.challenge.mspagamento.core.usecase.ConfirmarPagamentoUseCase;
-import br.com.tech.challenge.mspagamento.core.usecase.GerarPagamentoPorQrCodeUseCase;
+import br.com.tech.challenge.mspagamento.core.usecase.GerarImagemQrCodeUseCase;
 import br.com.tech.challenge.mspagamento.core.usecase.RealizarPagamentoUseCase;
 import jakarta.inject.Named;
 
@@ -24,6 +24,12 @@ public class PagamentoController {
         this.pedidoService = pedidoService;
         this.pagamentoService = pagamentoService;
         this.pagamentoRealizadoEventPublisher = pagamentoRealizadoEventPublisher;
+    }
+
+    public File gerarImagemQrCode(Long idPedido) {
+        var gerarPagamentoPorQrCodeUseCase = new GerarImagemQrCodeUseCase(this.pagamentoGateway);
+
+        return gerarPagamentoPorQrCodeUseCase.executar(idPedido);
     }
 
     public void pagar(Long idPedido) {

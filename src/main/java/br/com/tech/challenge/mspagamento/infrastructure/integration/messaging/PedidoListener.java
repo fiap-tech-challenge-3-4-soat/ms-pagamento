@@ -31,7 +31,7 @@ public class PedidoListener {
                         .pedido(pedido)
                         .build();
 
-        var pagamentoSalvo = pagamentoGateway.gerarQrCode(pagamento);
+        var pagamentoSalvo = pagamentoGateway.gerarDadosQrCode(pagamento);
 
         log.info(String.format("Pagamento de id %s criado com sucesso. Pedido id %d", pagamentoSalvo.getId(), pedido.getId()));
     }

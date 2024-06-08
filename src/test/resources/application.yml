@@ -1,9 +1,16 @@
 spring:
+  autoconfigure:
+    exclude: org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration
   data:
     mongodb:
       authentication-database: admin
       uri: mongodb://admin:admin@localhost:27017/pagamentos_test?authSource=admin
       database: pagamentos_test
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: test
+    password: test
 rest:
   service:
     mercadopago:
@@ -17,3 +24,9 @@ rest:
 
 assets:
   image: "src/test/resources/"
+  
+queue:
+  fila:
+    pedidos_criados: pedidos_criados
+    pagamentos_confirmados: pagamentos_confirmados
+  exchange: pagamentosex

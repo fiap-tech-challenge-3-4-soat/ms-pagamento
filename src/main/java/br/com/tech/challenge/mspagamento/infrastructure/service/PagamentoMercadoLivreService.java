@@ -32,7 +32,7 @@ public class PagamentoMercadoLivreService implements PagamentoService {
     private String notificacaoUrl;
 
     @Override
-    public Pagamento gerarQrCode(Pagamento pagamento) {
+    public Pagamento gerarDadosQrCode(Pagamento pagamento) {
         try {
             var request = obterMercadoPagoRequest(pagamento);
             var gerarQrDataResponse = mercadopagoHttpClient.gerarQrData(request);

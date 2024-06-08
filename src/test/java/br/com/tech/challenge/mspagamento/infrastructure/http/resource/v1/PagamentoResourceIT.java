@@ -87,7 +87,7 @@ class PagamentoResourceIT {
     }
 
     @Test
-    void deveriaGerarQrCodeDePagamentoComSucesso() throws Exception {
+    void deveriaGerarImagemQrCodeDePagamentoComSucesso() throws Exception {
         var gerarQrCodeResponse = TestObjects.obterGerarCodigoQrResponse();
         var obterPedidoResponse = TestObjects.obterPedidoResponse();
         var obterStatusPedidoResponse = TestObjects.obterStatusPedidoResponse();
@@ -106,7 +106,7 @@ class PagamentoResourceIT {
             imageIO.when(() -> ImageIO.read(any(ByteArrayInputStream.class)))
                     .thenReturn(TestObjects.obterBufferedImage());
 
-            mockMvc.perform(post(PAGAMENTO_PATH + "/{idPedido}", idPedido)
+            mockMvc.perform(post(PAGAMENTO_PATH + "/{idPedido}/qrcode", idPedido)
                             .contentType(MediaType.APPLICATION_JSON)
                     )
                     .andExpect(status().isOk())
@@ -273,7 +273,7 @@ class PagamentoResourceIT {
             imageIO.when(() -> ImageIO.read(any(ByteArrayInputStream.class)))
                     .thenThrow(new IOException(messageError));
 
-            mockMvc.perform(post(PAGAMENTO_PATH + "/{idPedido}", idPedido)
+            mockMvc.perform(post(PAGAMENTO_PATH + "/{idPedido}/qrcode", idPedido)
                             .contentType(MediaType.APPLICATION_JSON)
                     )
                     .andExpect(status().isInternalServerError())
@@ -317,7 +317,6 @@ class PagamentoResourceIT {
 
     private Pagamento salvarNovoPagamento() {
         var pagamento = Pagamento.builder()
-                .idPedido(idPedido)
                 .status(StatusPagamento.ABERTO)
                 .build();
         return pagamentoGateway.salvar(pagamento);

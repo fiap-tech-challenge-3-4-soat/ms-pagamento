@@ -29,4 +29,6 @@ public class TestObjects {
     public static  BufferedImage obterBufferedImage() throws IOException {
         return new BufferedImage(100, 100, BufferedImage.TYPE_INT_RGB);
     }
+
+    
 }

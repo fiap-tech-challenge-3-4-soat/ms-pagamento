@@ -25,9 +25,6 @@ class PagamentoControllerTest {
     private PagamentoGateway pagamentoGateway;
 
     @Mock
-    private PedidoService pedidoService;
-
-    @Mock
     private PagamentoService pagamentoService;
 
     @Mock
@@ -44,15 +41,18 @@ class PagamentoControllerTest {
 
 
     @Test
-    void deveriaGerarPagamentoComSucesso() {
-        doNothing().when(pedidoService).validarPedido(anyLong());
-        when(pagamentoGateway.gerarQrCode(any(Pagamento.class)))
+    void deveriaGerarImagemQrCodeComSucesso() {
+        when(pagamentoGateway.obterPagamentoPorIdPedido(anyLong()))
+                .thenReturn(Optional.of(pagamento));
+        when(pagamento.getQrCode())
+                .thenReturn("QrCodeData");
+        when(pagamentoGateway.gerarImagemQrCode(anyString(), anyLong()))
                 .thenReturn(file);
 
-        controller.gerarPagamento(1L);
+        controller.gerarImagemQrCode(1L);
 
-        verify(pedidoService).validarPedido(anyLong());
-        verify(pagamentoGateway).gerarQrCode(any(Pagamento.class));
+        verify(pagamentoGateway).obterPagamentoPorIdPedido(anyLong());
+        verify(pagamentoGateway).gerarImagemQrCode(anyString(), anyLong());
     }
 
     @Test
