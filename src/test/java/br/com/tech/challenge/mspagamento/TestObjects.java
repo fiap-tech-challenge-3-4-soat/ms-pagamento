@@ -30,5 +30,5 @@ public class TestObjects {
         return new BufferedImage(100, 100, BufferedImage.TYPE_INT_RGB);
     }
 
-    
+
 }

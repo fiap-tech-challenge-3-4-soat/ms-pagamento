@@ -10,7 +10,7 @@ import java.util.List;
 @Getter
 @AllArgsConstructor
 public class PedidoTO {
-    private Integer id;
+    private Long id;
     private String status;
     private LocalDateTime dataCriacao;
     private LocalDateTime dataAtualizacao;

@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public class Pedido {
-    private Integer id;
+    private Long id;
     private String status;
     private LocalDateTime dataCriacao;
     private LocalDateTime dataAtualizacao;
@@ -29,7 +29,7 @@ public class Pedido {
         return new PedidoBuilder();
     }
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
@@ -62,7 +62,7 @@ public class Pedido {
     }
 
     public static class PedidoBuilder {
-        private Integer id;
+        private Long id;
         private String status;
         private LocalDateTime dataCriacao;
         private LocalDateTime dataAtualizacao;
@@ -71,7 +71,7 @@ public class Pedido {
         private String cliente;
         private List<ItemPedido> itens;
 
-        public PedidoBuilder id(Integer id) {
+        public PedidoBuilder id(Long id) {
             this.id = id;
             return this;
         }

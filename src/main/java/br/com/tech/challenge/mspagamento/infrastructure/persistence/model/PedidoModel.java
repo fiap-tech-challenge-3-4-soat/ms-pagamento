@@ -13,7 +13,7 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 public class PedidoModel {
-    private Integer id;
+    private Long id;
     private String status;
     private LocalDateTime dataCriacao;
     private LocalDateTime dataAtualizacao;

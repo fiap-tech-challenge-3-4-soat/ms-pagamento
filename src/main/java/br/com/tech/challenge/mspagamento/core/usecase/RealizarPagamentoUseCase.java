@@ -1,18 +1,18 @@
 package br.com.tech.challenge.mspagamento.core.usecase;
 
 import br.com.tech.challenge.mspagamento.core.event.PagamentoRealizadoEvent;
-import br.com.tech.challenge.mspagamento.core.event.publisher.PagamentoRealizadoEventPublisher;
 import br.com.tech.challenge.mspagamento.core.exception.PagamentoInexistenteException;
 import br.com.tech.challenge.mspagamento.core.exception.PagamentoJaRealizadoException;
 import br.com.tech.challenge.mspagamento.core.gateway.PagamentoGateway;
+import br.com.tech.challenge.mspagamento.core.queue.PagamentoQueue;
 
 public class RealizarPagamentoUseCase {
     private final PagamentoGateway pagamentoGateway;
-    private final PagamentoRealizadoEventPublisher pagamentoRealizadoEventPublisher;
+    private final PagamentoQueue pagamentoQueue;
 
-    public RealizarPagamentoUseCase(PagamentoGateway pagamentoGateway, PagamentoRealizadoEventPublisher pagamentoRealizadoEventPublisher) {
+    public RealizarPagamentoUseCase(PagamentoGateway pagamentoGateway, PagamentoQueue pagamentoQueue) {
         this.pagamentoGateway = pagamentoGateway;
-        this.pagamentoRealizadoEventPublisher = pagamentoRealizadoEventPublisher;
+        this.pagamentoQueue = pagamentoQueue;
     }
 
     public void executar(Long idPedido) {
@@ -27,6 +27,6 @@ public class RealizarPagamentoUseCase {
 
         pagamentoGateway.salvar(pagamento);
 
-        pagamentoRealizadoEventPublisher.publicar(new PagamentoRealizadoEvent(pagamento));
+        pagamentoQueue.publicarPagamentoRealizado(new PagamentoRealizadoEvent(pagamento));
     }
 }

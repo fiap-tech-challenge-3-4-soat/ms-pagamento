@@ -20,7 +20,7 @@ public class PedidoListener {
     private final PedidoModelMapper pedidoModelMapper;
     private final PagamentoGateway pagamentoGateway;
 
-    @RabbitListener(queues = {"${queue.fila.pedidos_criados}"})
+    @RabbitListener(queues = {"${queue.filas.pedidos_criados}"})
     public void receive(String message) throws JsonProcessingException {
         var pedidoTO = objectMapper.readValue(message, PedidoTO.class);
         var pedido = pedidoModelMapper.toDomain(pedidoTO);
