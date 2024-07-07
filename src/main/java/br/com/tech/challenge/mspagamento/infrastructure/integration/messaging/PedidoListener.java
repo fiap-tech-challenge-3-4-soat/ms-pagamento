@@ -22,6 +22,8 @@ public class PedidoListener {
 
     @RabbitListener(queues = {"${queue.filas.pedidos_criados}"})
     public void receive(String message) throws JsonProcessingException {
+        log.info("Iniciando criação do pagamento de pedido");
+
         var pedidoTO = objectMapper.readValue(message, PedidoTO.class);
         var pedido = pedidoModelMapper.toDomain(pedidoTO);
 

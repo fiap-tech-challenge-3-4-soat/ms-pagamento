@@ -2,8 +2,6 @@ package br.com.tech.challenge.mspagamento.application.controller;
 
 
 import br.com.tech.challenge.mspagamento.application.service.PagamentoService;
-import br.com.tech.challenge.mspagamento.application.service.PedidoService;
-import br.com.tech.challenge.mspagamento.core.event.publisher.PagamentoRealizadoEventPublisher;
 import br.com.tech.challenge.mspagamento.core.gateway.PagamentoGateway;
 import br.com.tech.challenge.mspagamento.core.queue.PagamentoQueue;
 import br.com.tech.challenge.mspagamento.core.usecase.ConfirmarPagamentoUseCase;
@@ -39,7 +37,7 @@ public class PagamentoController {
 
     public void receberConfirmacaoPagamento(Long idExterno) {
         var realizarPagamentoUseCase = new RealizarPagamentoUseCase(this.pagamentoGateway, pagamentoQueue);
-        //TODO remover confirmacao
+
         var confirmarPagamentoUseCase = new ConfirmarPagamentoUseCase(this.pagamentoService, realizarPagamentoUseCase);
 
         confirmarPagamentoUseCase.executar(idExterno);

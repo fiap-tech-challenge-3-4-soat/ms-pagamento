@@ -9,8 +9,16 @@ public record ConsultaMerchantOrderResponse(String id,
                                             @JsonProperty("external_reference") Long externalReference) {
 
     public boolean isPaid() {
-        return Boolean.FALSE.equals(cancelled)
-                && status.equalsIgnoreCase("closed")
+        return isClosed()
+                && !isCancelled()
                 && orderStatus.equalsIgnoreCase("paid");
+    }
+
+    public boolean isClosed() {
+        return status.equalsIgnoreCase("closed");
+    }
+
+    public boolean isCancelled() {
+        return Boolean.TRUE.equals(cancelled);
     }
 }

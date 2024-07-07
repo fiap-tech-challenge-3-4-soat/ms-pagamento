@@ -24,13 +24,20 @@
 		<jib-maven-plugin.version>3.4.0</jib-maven-plugin.version>
 		<jacoco.version>0.8.8</jacoco.version>
 		<mockito-inline.version>5.2.0</mockito-inline.version>
-		<sonar.sources>src/main/java</sonar.sources>
-		<sonar.organization>fiap-tech-challenge-3-4-soat</sonar.organization>
-		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
 		<cucumber-java.version>7.18.0</cucumber-java.version>
 		<cucumber-spring.version>7.18.0</cucumber-spring.version>
 		<cucumber-junit-platform-engine.version>7.16.1</cucumber-junit-platform-engine.version>
 		<junit-platform-suite-api.version>1.9.3</junit-platform-suite-api.version>
+		<sonar.sources>src/main/java</sonar.sources>
+		<sonar.organization>fiap-tech-challenge-3-4-soat</sonar.organization>
+		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
+		<sonar.coverage.exclusions>
+			**/MsPagamentoApplication.java
+			**/infrastructure/config/**/*,
+			**/infrastructure/queue/**/*,
+			**/infrastructure/event/**/*,
+			**/infrastructure/mapper/**/*,
+		</sonar.coverage.exclusions>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -186,6 +193,10 @@
 					<skip>${skipTests}</skip>
 					<excludes>
 						<exclude>**/MsPagamentoApplication.class</exclude>
+						<exclude>**/infrastructure/config/**</exclude>
+						<exclude>**/infrastructure/queue/**</exclude>
+						<exclude>**/infrastructure/event/**</exclude>
+						<exclude>**/infrastructure/mapper/**</exclude>
 					</excludes>
 				</configuration>
 

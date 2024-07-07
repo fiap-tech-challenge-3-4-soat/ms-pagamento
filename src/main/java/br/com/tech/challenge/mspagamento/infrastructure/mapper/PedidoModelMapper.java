@@ -1,9 +1,7 @@
 package br.com.tech.challenge.mspagamento.infrastructure.mapper;
 
-import br.com.tech.challenge.mspagamento.core.domain.Pagamento;
 import br.com.tech.challenge.mspagamento.core.domain.Pedido;
 import br.com.tech.challenge.mspagamento.infrastructure.integration.transfer.PedidoTO;
-import br.com.tech.challenge.mspagamento.infrastructure.persistence.model.PagamentoModel;
 import br.com.tech.challenge.mspagamento.infrastructure.persistence.model.PedidoModel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;

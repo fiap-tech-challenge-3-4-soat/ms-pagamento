@@ -3,7 +3,6 @@ package br.com.tech.challenge.mspagamento.infrastructure.mapper;
 import br.com.tech.challenge.mspagamento.core.domain.ItemPedido;
 import br.com.tech.challenge.mspagamento.infrastructure.integration.transfer.ItemPedidoTO;
 import br.com.tech.challenge.mspagamento.infrastructure.persistence.model.ItemPedidoModel;
-import br.com.tech.challenge.mspagamento.infrastructure.persistence.model.PedidoModel;
 import org.springframework.stereotype.Component;
 
 @Component
