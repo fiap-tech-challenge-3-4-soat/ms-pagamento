@@ -43,7 +43,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 class PagamentoResourceIT {
-    private final String PAGAMENTO_PATH = "/v1/pagamentos";
+    private final String pagamentoPath = "/v1/pagamentos";
 
     private Pagamento pagamento;
 
@@ -104,7 +104,7 @@ class PagamentoResourceIT {
             imageIO.when(() -> ImageIO.read(any(ByteArrayInputStream.class)))
                     .thenReturn(obterBufferedImage());
 
-            mockMvc.perform(post(PAGAMENTO_PATH + "/{idPedido}/qrcode", idPedido)
+            mockMvc.perform(post(pagamentoPath + "/{idPedido}/qrcode", idPedido)
                             .contentType(MediaType.APPLICATION_JSON)
                     )
                     .andExpect(status().isOk())
@@ -123,7 +123,7 @@ class PagamentoResourceIT {
         when(qrCodeHttpClient.gerarQrCode(anyString(), anyString()))
                 .thenReturn(ResponseEntity.of(Optional.empty()));
 
-        mockMvc.perform(post(PAGAMENTO_PATH + "/{idPedido}/qrcode", idPedido)
+        mockMvc.perform(post(pagamentoPath + "/{idPedido}/qrcode", idPedido)
                         .contentType(MediaType.APPLICATION_JSON)
                 )
                 .andExpect(status().isInternalServerError())
@@ -137,7 +137,7 @@ class PagamentoResourceIT {
         when(qrCodeHttpClient.gerarQrCode(anyString(), anyString()))
                 .thenThrow(FeignException.class);
 
-        mockMvc.perform(post(PAGAMENTO_PATH + "/{idPedido}/qrcode", idPedido)
+        mockMvc.perform(post(pagamentoPath + "/{idPedido}/qrcode", idPedido)
                         .contentType(MediaType.APPLICATION_JSON)
                 )
                 .andExpect(status().isInternalServerError());
@@ -151,7 +151,7 @@ class PagamentoResourceIT {
 
         assertFalse(pagamento.estaPago());
 
-        mockMvc.perform(post(PAGAMENTO_PATH + "/confirmar-pagamento")
+        mockMvc.perform(post(pagamentoPath + "/confirmar-pagamento")
                         .param("id", String.valueOf(idPedido))
                         .param("topic", EventoConfirmacaoPagamento.MOCK.name())
                         .contentType(MediaType.APPLICATION_JSON)
@@ -166,7 +166,7 @@ class PagamentoResourceIT {
     @Test
     void deveriaFalharQuandoReceberConfirmacaoDePagamentoComIdPedidoInvalido() throws Exception {
         var idPedidoInvalido = 111L;
-        mockMvc.perform(post(PAGAMENTO_PATH + "/confirmar-pagamento")
+        mockMvc.perform(post(pagamentoPath + "/confirmar-pagamento")
                         .param("id", String.valueOf(idPedidoInvalido))
                         .param("topic", EventoConfirmacaoPagamento.MOCK.name())
                         .contentType(MediaType.APPLICATION_JSON)
@@ -189,7 +189,7 @@ class PagamentoResourceIT {
         when(mercadopagoHttpClient.consultarMerchantOrder(anyLong()))
                 .thenReturn(ResponseEntity.of(Optional.of(consultaMerchantOrderResponse)));
 
-        mockMvc.perform(post(PAGAMENTO_PATH + "/confirmar-pagamento")
+        mockMvc.perform(post(pagamentoPath + "/confirmar-pagamento")
                         .param("id", String.valueOf(idPedido))
                         .param("topic", EventoConfirmacaoPagamento.MERCHANT_ORDER.name())
                         .contentType(MediaType.APPLICATION_JSON)
@@ -203,7 +203,7 @@ class PagamentoResourceIT {
 
     @Test
     void deveriaRetornarQuandoTopicForPayment() throws Exception {
-        mockMvc.perform(post(PAGAMENTO_PATH + "/confirmar-pagamento")
+        mockMvc.perform(post(pagamentoPath + "/confirmar-pagamento")
                         .param("id", String.valueOf(111L))
                         .param("topic", EventoConfirmacaoPagamento.PAYMENT.name())
                         .contentType(MediaType.APPLICATION_JSON)
@@ -225,7 +225,7 @@ class PagamentoResourceIT {
             imageIO.when(() -> ImageIO.read(any(ByteArrayInputStream.class)))
                     .thenThrow(new IOException(messageError));
 
-            mockMvc.perform(post(PAGAMENTO_PATH + "/{idPedido}/qrcode", idPedido)
+            mockMvc.perform(post(pagamentoPath + "/{idPedido}/qrcode", idPedido)
                             .contentType(MediaType.APPLICATION_JSON)
                     )
                     .andExpect(status().isInternalServerError())

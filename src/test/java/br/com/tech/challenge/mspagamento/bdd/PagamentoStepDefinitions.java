@@ -36,7 +36,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @CucumberContextConfiguration
 @AutoConfigureMockMvc
 public class PagamentoStepDefinitions {
-    private final String PAGAMENTO_PATH = "/v1/pagamentos";
+    private final String pagamentoPath = "/v1/pagamentos";
 
     private File file;
 
@@ -80,7 +80,7 @@ public class PagamentoStepDefinitions {
             imageIO.when(() -> ImageIO.read(any(ByteArrayInputStream.class)))
                     .thenReturn(obterBufferedImage);
 
-            resultActions = mockMvc.perform(post(PAGAMENTO_PATH + "/{idPedido}", idPedido)
+            resultActions = mockMvc.perform(post(pagamentoPath + "/{idPedido}", idPedido)
                             .contentType(MediaType.APPLICATION_JSON)
                     );
         }
