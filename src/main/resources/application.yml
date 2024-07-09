@@ -19,7 +19,7 @@ spring:
     host: localhost
     port: 5672
     username: admin
-    password: admin
+    password: ${QUEUE_PASSWORD}
     listener:
       simple:
         retry:
