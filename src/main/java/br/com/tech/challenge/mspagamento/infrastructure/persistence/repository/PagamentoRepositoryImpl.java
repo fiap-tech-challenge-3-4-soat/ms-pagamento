@@ -17,7 +17,7 @@ public class PagamentoRepositoryImpl implements PagamentoRepository {
 
     @Override
     public Optional<Pagamento> obterPagamentoPorIdPedido(Long idPedido) {
-        return pagamentoRepositoryMongoDB.findByIdPedido(idPedido)
+        return pagamentoRepositoryMongoDB.findByPedidoId(idPedido)
                 .map(mapper::toDomain);
     }
 

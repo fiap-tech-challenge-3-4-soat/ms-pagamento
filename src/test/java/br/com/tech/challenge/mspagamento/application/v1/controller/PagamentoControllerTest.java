@@ -2,11 +2,10 @@ package br.com.tech.challenge.mspagamento.application.v1.controller;
 
 import br.com.tech.challenge.mspagamento.application.controller.PagamentoController;
 import br.com.tech.challenge.mspagamento.application.service.PagamentoService;
-import br.com.tech.challenge.mspagamento.application.service.PedidoService;
 import br.com.tech.challenge.mspagamento.core.domain.Pagamento;
 import br.com.tech.challenge.mspagamento.core.event.PagamentoRealizadoEvent;
-import br.com.tech.challenge.mspagamento.core.event.publisher.PagamentoRealizadoEventPublisher;
 import br.com.tech.challenge.mspagamento.core.gateway.PagamentoGateway;
+import br.com.tech.challenge.mspagamento.core.queue.PagamentoQueue;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -25,13 +24,7 @@ class PagamentoControllerTest {
     private PagamentoGateway pagamentoGateway;
 
     @Mock
-    private PedidoService pedidoService;
-
-    @Mock
     private PagamentoService pagamentoService;
-
-    @Mock
-    private PagamentoRealizadoEventPublisher pagamentoRealizadoEventPublisher;
 
     @Mock
     private File file;
@@ -39,20 +32,26 @@ class PagamentoControllerTest {
     @Mock
     private Pagamento pagamento;
 
+    @Mock
+    private PagamentoQueue pagamentoQueue;
+
     @InjectMocks
     private PagamentoController controller;
 
 
     @Test
-    void deveriaGerarPagamentoComSucesso() {
-        doNothing().when(pedidoService).validarPedido(anyLong());
-        when(pagamentoGateway.gerarQrCode(any(Pagamento.class)))
+    void deveriaGerarImagemQrCodeComSucesso() {
+        when(pagamentoGateway.obterPagamentoPorIdPedido(anyLong()))
+                .thenReturn(Optional.of(pagamento));
+        when(pagamento.getQrCode())
+                .thenReturn("QrCodeData");
+        when(pagamentoGateway.gerarImagemQrCode(anyString(), anyLong()))
                 .thenReturn(file);
 
-        controller.gerarPagamento(1L);
+        controller.gerarImagemQrCode(1L);
 
-        verify(pedidoService).validarPedido(anyLong());
-        verify(pagamentoGateway).gerarQrCode(any(Pagamento.class));
+        verify(pagamentoGateway).obterPagamentoPorIdPedido(anyLong());
+        verify(pagamentoGateway).gerarImagemQrCode(anyString(), anyLong());
     }
 
     @Test
@@ -69,7 +68,7 @@ class PagamentoControllerTest {
         verify(pagamentoGateway).salvar(any(Pagamento.class));
         verify(pagamento).definirPago();
         verify(pagamento).estaPago();
-        verify(pagamentoRealizadoEventPublisher).publicar(any(PagamentoRealizadoEvent.class));
+        verify(pagamentoQueue).publicarPagamentoRealizado(any(PagamentoRealizadoEvent.class));
     }
 
     @Test
@@ -83,9 +82,8 @@ class PagamentoControllerTest {
 
         controller.receberConfirmacaoPagamento(1L);
 
-        verify(pagamentoService).confirmarPagamento(anyLong());
         verify(pagamentoGateway).obterPagamentoPorIdPedido(anyLong());
         verify(pagamento).definirPago();
-        verify(pagamentoRealizadoEventPublisher).publicar(any(PagamentoRealizadoEvent.class));
+        verify(pagamentoQueue).publicarPagamentoRealizado(any(PagamentoRealizadoEvent.class));
     }
 }

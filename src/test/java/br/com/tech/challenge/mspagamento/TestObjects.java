@@ -1,15 +1,15 @@
 package br.com.tech.challenge.mspagamento;
 
+import br.com.tech.challenge.mspagamento.core.domain.ItemPedido;
+import br.com.tech.challenge.mspagamento.core.domain.Pagamento;
+import br.com.tech.challenge.mspagamento.core.domain.Pedido;
+import br.com.tech.challenge.mspagamento.core.domain.StatusPagamento;
+import br.com.tech.challenge.mspagamento.infrastructure.integration.rest.mercadopago.ConsultaMerchantOrderResponse;
 import br.com.tech.challenge.mspagamento.infrastructure.integration.rest.mercadopago.GerarCodigoQrResponse;
-import br.com.tech.challenge.mspagamento.infrastructure.integration.rest.mspedido.ObterPedidoResponse;
-import br.com.tech.challenge.mspagamento.infrastructure.integration.rest.mspedido.ObterStatusPedidoResponse;
-import br.com.tech.challenge.mspagamento.infrastructure.integration.rest.mspedido.to.ItemPedidoTO;
-import br.com.tech.challenge.mspagamento.infrastructure.integration.rest.mspedido.to.PedidoTO;
 
 import java.awt.image.BufferedImage;
-import java.io.IOException;
 import java.math.BigDecimal;
-import java.util.ArrayList;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class TestObjects {
@@ -17,16 +17,45 @@ public class TestObjects {
         return new GerarCodigoQrResponse("idExternal", "qrData");
     }
 
-    public static ObterStatusPedidoResponse obterStatusPedidoResponse() {
-        return new ObterStatusPedidoResponse(Boolean.FALSE);
+    public static ConsultaMerchantOrderResponse obterConsultaMerchantOrderResponse(Long idPedido) {
+        return new ConsultaMerchantOrderResponse("idExterno", "closed", false, "paid", idPedido);
     }
 
-    public static ObterPedidoResponse obterPedidoResponse() {
-        var itemPedido = new ItemPedidoTO("Nome teste", "Descrição Teste", BigDecimal.TEN, 2, "Observacao Teste");
-        return new ObterPedidoResponse(new PedidoTO(1L, BigDecimal.TEN, Boolean.TRUE, new ArrayList<>(List.of(itemPedido))));
-    }
-
-    public static  BufferedImage obterBufferedImage() throws IOException {
+    public static BufferedImage obterBufferedImage() {
         return new BufferedImage(100, 100, BufferedImage.TYPE_INT_RGB);
+    }
+
+    public static Pagamento obterPagamento() {
+        return Pagamento.builder()
+                .idPagamentoExterno("idExterno")
+                .total(BigDecimal.TEN)
+                .status(StatusPagamento.ABERTO)
+                .qrCode("qrCode")
+                .pedido(obterPedido())
+                .build();
+    }
+
+    public static Pedido obterPedido() {
+        return Pedido.builder()
+                .id(155L)
+                .status("RECEBIDO")
+                .dataCriacao(LocalDateTime.now())
+                .dataAtualizacao(LocalDateTime.now())
+                .total(BigDecimal.TEN)
+                .pago(Boolean.FALSE)
+                .cliente("Cliente Teste")
+                .itens(List.of(obterItemPedido()))
+                .build();
+    }
+
+    public static ItemPedido obterItemPedido() {
+        return ItemPedido.builder()
+                .nomeProduto("Produto Teste")
+                .descricaoProduto("Descricao Produto")
+                .categoriaProduto("Categoria produto")
+                .preco(BigDecimal.TEN)
+                .quantidade(2)
+                .observacao("Observacao")
+                .build();
     }
 }

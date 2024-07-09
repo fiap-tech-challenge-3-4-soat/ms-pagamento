@@ -7,5 +7,5 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import java.util.Optional;
 
 public interface PagamentoRepositoryMongoDB extends MongoRepository<PagamentoModel, String> {
-    Optional<PagamentoModel> findByIdPedido(Long id);
+    Optional<PagamentoModel> findByPedidoId(Long idPedido);
 }

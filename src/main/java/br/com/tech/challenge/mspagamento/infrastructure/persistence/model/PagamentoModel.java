@@ -28,4 +28,5 @@ public class PagamentoModel {
     @Enumerated(EnumType.STRING)
     private StatusPagamento status;
     private String qrCode;
+    private PedidoModel pedido;
 }

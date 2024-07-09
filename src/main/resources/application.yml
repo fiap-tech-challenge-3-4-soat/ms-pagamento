@@ -14,8 +14,24 @@ spring:
       authentication-database: admin
       uri: mongodb://${DB_USER}:${DB_PASSWORD}@${DB_HOST}/pagamentos?authSource=admin
       database: pagamentos
+      
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: admin
+    password: ${QUEUE_PASSWORD}
+    listener:
+      simple:
+        retry:
+          enabled: true
+          max-attempts: 4
+          initial-interval: 5000
+          max-interval: 300000
+          multiplier: 3
+
 server:
   port: 8081
+  
 rest:
   service:
     mercadopago:
@@ -29,3 +45,13 @@ rest:
 
 assets:
   image: "qr-codes/qrcode-pedido-"
+  
+queue:
+  filas:
+    pedidos_criados: pedidos_criados
+    pagamentos_nao_gerados: pagamentos_nao_gerados-dlq
+    pagamentos_confirmados: pagamentos_confirmados
+  exchange:
+    fanoutPedido: pedidos.ex
+    fanoutPagamento: pagamento.ex
+    deadLetterPedido: pagamentos.dlx

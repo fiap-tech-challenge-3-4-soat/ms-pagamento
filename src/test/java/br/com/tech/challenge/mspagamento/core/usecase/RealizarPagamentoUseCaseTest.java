@@ -2,10 +2,10 @@ package br.com.tech.challenge.mspagamento.core.usecase;
 
 import br.com.tech.challenge.mspagamento.core.domain.Pagamento;
 import br.com.tech.challenge.mspagamento.core.event.PagamentoRealizadoEvent;
-import br.com.tech.challenge.mspagamento.core.event.publisher.PagamentoRealizadoEventPublisher;
 import br.com.tech.challenge.mspagamento.core.exception.PagamentoInexistenteException;
 import br.com.tech.challenge.mspagamento.core.exception.PagamentoJaRealizadoException;
 import br.com.tech.challenge.mspagamento.core.gateway.PagamentoGateway;
+import br.com.tech.challenge.mspagamento.core.queue.PagamentoQueue;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -26,10 +26,10 @@ class RealizarPagamentoUseCaseTest {
     private PagamentoGateway pagamentoGateway;
 
     @Mock
-    private PagamentoRealizadoEventPublisher pagamentoRealizadoEventPublisher;
+    private Pagamento pagamento;
 
     @Mock
-    private Pagamento pagamento;
+    private PagamentoQueue pagamentoQueue;
 
     @InjectMocks
     private RealizarPagamentoUseCase underTest;
@@ -46,7 +46,7 @@ class RealizarPagamentoUseCaseTest {
         verify(pagamentoGateway).salvar(any(Pagamento.class));
         verify(pagamento).definirPago();
         verify(pagamento).estaPago();
-        verify(pagamentoRealizadoEventPublisher).publicar(any(PagamentoRealizadoEvent.class));
+        verify(pagamentoQueue).publicarPagamentoRealizado(any(PagamentoRealizadoEvent.class));
     }
 
     @Test
@@ -55,7 +55,6 @@ class RealizarPagamentoUseCaseTest {
         when(pagamentoGateway.obterPagamentoPorIdPedido(anyLong()))
                 .thenReturn(Optional.empty());
 
-        //TODO verificar
         var exception = assertThrows(PagamentoInexistenteException.class,
                 () -> underTest.executar(idPedidoInvalido));
 
@@ -65,7 +64,7 @@ class RealizarPagamentoUseCaseTest {
         verify(pagamentoGateway, never()).salvar(any(Pagamento.class));
         verify(pagamento, never()).estaPago();
         verify(pagamento, never()).definirPago();
-        verify(pagamentoRealizadoEventPublisher, never()).publicar(any(PagamentoRealizadoEvent.class));
+        verify(pagamentoQueue, never()).publicarPagamentoRealizado(any(PagamentoRealizadoEvent.class));
     }
 
     @Test
@@ -75,13 +74,13 @@ class RealizarPagamentoUseCaseTest {
         when(pagamento.estaPago())
                 .thenReturn(Boolean.TRUE);
 
-        var exception = assertThrows(PagamentoJaRealizadoException.class,
+        assertThrows(PagamentoJaRealizadoException.class,
                 () -> underTest.executar(1L));
 
         verify(pagamentoGateway).obterPagamentoPorIdPedido(anyLong());
         verify(pagamentoGateway, never()).salvar(any(Pagamento.class));
         verify(pagamento).estaPago();
         verify(pagamento, never()).definirPago();
-        verify(pagamentoRealizadoEventPublisher, never()).publicar(any(PagamentoRealizadoEvent.class));
+        verify(pagamentoQueue, never()).publicarPagamentoRealizado(any(PagamentoRealizadoEvent.class));
     }
 }

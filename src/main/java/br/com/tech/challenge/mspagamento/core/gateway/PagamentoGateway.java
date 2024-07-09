@@ -6,7 +6,8 @@ import java.io.File;
 import java.util.Optional;
 
 public interface PagamentoGateway {
-    File gerarQrCode(Pagamento pagamento);
+    Pagamento gerarDadosQrCode(Pagamento pagamento);
+    File gerarImagemQrCode(String qrCodeData, Long idPedido);
     Optional<Pagamento> obterPagamentoPorIdPedido(Long idPedido);
     Pagamento salvar(Pagamento pagamento);
 }

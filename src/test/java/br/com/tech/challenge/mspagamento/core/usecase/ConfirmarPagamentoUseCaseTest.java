@@ -8,7 +8,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class ConfirmarPagamentoUseCaseTest {
@@ -22,13 +23,12 @@ class ConfirmarPagamentoUseCaseTest {
     private ConfirmarPagamentoUseCase underTest;
 
     @Test
-    void deveriaReceberConfirmacaoPagamentoComSucesso() {
-        var idPedido = 10L;
+    void deveriaRealizarPagamentoComSucesso() {
+        var idPedido = 1L;
         when(pagamentoService.confirmarPagamento(anyLong()))
                 .thenReturn(idPedido);
-        doNothing().when(realizarPagamentoUseCase).executar(idPedido);
 
-        underTest.executar(1L);
+        underTest.executar(122L);
 
         verify(pagamentoService).confirmarPagamento(anyLong());
         verify(realizarPagamentoUseCase).executar(idPedido);

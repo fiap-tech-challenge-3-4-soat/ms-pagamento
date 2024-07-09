@@ -19,9 +19,9 @@ import java.util.Objects;
 public class PagamentoResource {
     private final PagamentoController controller;
 
-    @PostMapping("{idPedido}")
-    public ResponseEntity<ByteArrayResource> gerarPagamento(@PathVariable Long idPedido) throws IOException {
-        var arquivo = controller.gerarPagamento(idPedido);
+    @PostMapping("{idPedido}/qrcode")
+    public ResponseEntity<ByteArrayResource> gerarImagemQrCode(@PathVariable Long idPedido) throws IOException {
+        var arquivo = controller.gerarImagemQrCode(idPedido);
 
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=mercadopago.png");
