@@ -49,7 +49,7 @@ public class PagamentoMercadoLivreService implements PagamentoService {
 
             return mapper.toDomain(pagamentoModel);
         } catch (FeignException exception) {
-            throw new IntegrationException(exception.getMessage());
+            throw new IntegrationException("Não foi possível gerar os dados de pagamento");
         }
     }
 
@@ -65,7 +65,7 @@ public class PagamentoMercadoLivreService implements PagamentoService {
 
             return null;
         } catch (FeignException exception) {
-            throw new IntegrationException(exception.getMessage());
+            throw new IntegrationException("Não foi possível consultar os dados do pedido");
         }
     }
 
